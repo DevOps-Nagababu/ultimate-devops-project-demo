@@ -1,5 +1,5 @@
-# CI for product catalogue
-name: product-catalogue-ci
+# CI for product catalog
+name: product-catalog-ci
 
 on:
     pull_request:
@@ -19,12 +19,12 @@ jobs:
 
             - name: Build
               run: |
-                cd src/product-catalogue
+                cd src/product-catalog
                 go mod download
-                go build -o product-catalogue-service main.go
+                go build -o product-catalog-service main.go
 
             - name: Run unit tests
-              run: go test src/product-catalogue/...
+              run: go test src/product-catalog/...
 
     code-quality:
         runs-on: ubuntu-latest
@@ -40,7 +40,7 @@ jobs:
             - name: Run code quality checks
               run: |
                 go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-                golangci-lint run src/product-catalogue/...
+                golangci-lint run src/product-catalog/...
 
     docker:
         runs-on: ubuntu-latest
@@ -62,10 +62,10 @@ jobs:
             - name: Docker push
               uses: docker/build-push-action@v6
               with:
-                context: src/product-catalogue
+                context: src/product-catalog
                 file: Dockerfile
                 push: true
-                tags: ${{ secrets.DOCKER_USERNAME }}/product-catalogue:${{github.run_id}}
+                tags: ${{ secrets.DOCKER_USERNAME }}/product-catalog:${{github.run_id}}
 
     updatek8s:  
             runs-on: ubuntu-latest
@@ -79,7 +79,7 @@ jobs:
                     
                 - name: update the tag in the k8s deployment file
                   run: |
-                    sed -i 's/image: .*/image: ${{ secrets.DOCKER_USERNAME }}/product-catalogue:${{github.run_id}}/' kubernetes/productcatalog/deploy.yaml
+                    sed -i 's/image: .*/image: ${{ secrets.DOCKER_USERNAME }}/product-catalog:${{github.run_id}}/' kubernetes/productcatalog/deploy.yaml
 
                 - name: Commit and push changes
                   run: |
